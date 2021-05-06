@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+  <meta name="description" content="Confronto COVID 2020 vs 2021" />
+  <meta charset="utf-8">
+  <title>Covid ITALIA: 2020 vs 2021</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Andrea Grazioli">
+  <link rel="stylesheet" href="style.css">
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.2.0/chart.min.js" integrity="sha512-VMsZqo0ar06BMtg0tPsdgRADvl0kDHpTbugCBBrL55KmucH6hP9zWdLIWY//OTfMnzz6xWQRxQqsUFefwHuHyg==" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@0.1.1"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/it.js"></script>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Covid in ITALIA<br/>2020 vs 2021</h1>
+    <p>I grafici mettono a confronto alcuni valori giornalieri legati alla pandemia di Coronavirus in Italia, paragonando i singoli giorni del 2020 con quelli 2021.
+      <br />Dati ufficiali presi da: <a href="https://github.com/pcm-dpc/COVID-19">GitHub Protezione Civile</a></p>
+    <p>&#9888;&#65039; Qualsiasi intepretazione o elaborazione in questa pagina può essere soggetta a errori e non è in alcun modo un canale ufficiale. &#9888;&#65039;</p>
+    <div class="chart-container">
+      <div class="flex-chart">
+        <h2>TOTALE POSITIVI</h2>
+        <canvas id="totalePositivi"></canvas>
+      </div>
+      <div class="flex-chart">
+        <h2>NUOVI POSITIVI</h2>
+        <canvas id="nuoviPositivi"></canvas>
+      </div>
+      <div class="flex-chart">
+        <h2>TERAPIE INTENSIVE</h2>
+        <canvas id="terapieChart"></canvas>
+      </div>
+      <div class="flex-chart">
+        <h2>RICOVERATI</h2>
+        <canvas id="ricoveratiChart"></canvas>
+      </div>
+    </div>
+  </div>
+</body>
+<script>
+  var covidData;
+  var values = [];
+
+  $.ajax({
+    url: 'output.json',
+    dataType: 'json',
+    async: false,
+    data: covidData,
+    success: function(covidData) {
+      date = covidData["date"][0]; //primo anno
+
+      values[0] = covidData["terapie_intensive"][0];
+      values[1] = covidData["terapie_intensive"][1];
+
+      values[2] = covidData["ricoverati_con_sintomi"][0];
+      values[3] = covidData["ricoverati_con_sintomi"][1];
+
+      values[4] = covidData["totale_positivi"][0];
+      values[5] = covidData["totale_positivi"][1];
+
+      values[6] = covidData["nuovi_positivi"][0];
+      values[7] = covidData["nuovi_positivi"][1];
+    }
+  });
+
+  drawCharts(date, values[0], values[1], "terapieChart", "TERAPIE INTENSIVE");
+  drawCharts(date, values[2], values[3], "ricoveratiChart", "RICOVERATI");
+  drawCharts(date, values[4], values[5], "totalePositivi", "ATTUALMENTE POSITIVI");
+  drawCharts(date, values[6], values[7], "nuoviPositivi", "NUOVI POSITIVI");
+
+
+  function drawCharts(labels, line1, line2, chart) {
+    const data = {
+      labels: labels,
+      datasets: [{
+        label: '2020',
+        backgroundColor: '#42AD84',
+        borderColor: '#42AD84',
+        data: line1,
+        borderWidth: 2
+      }, {
+        label: '2021',
+        backgroundColor: '#F9F871',
+        borderColor: '#F9F871',
+        data: line2,
+        borderWidth: 2
+      }]
+    };
+
+    const config = {
+      type: 'line',
+      data,
+      options: {
+        elements: {
+          point: {
+            radius: 0
+          }
+        },
+        plugins: {
+          tooltip: {},
+          legend: {
+            labels: {
+              color: 'white'
+            }
+          }
+        },
+        scales: {
+          y: {
+            ticks: {
+              color: 'white'
+            }
+          },
+          x: {
+            type: 'time',
+            time: {
+              displayFormats: {
+                day: 'D MMMM'
+              }
+            },
+            ticks: {
+              color: "white",
+              maxTicksLimit: 20
+            }
+          }
+        }
+      }
+    };
+
+    let actualChart = new Chart(
+      document.getElementById(chart),
+      config
+    );
+  }
+</script>
+
+</html>

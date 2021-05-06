@@ -1,0 +1,38 @@
+@import url(https://fonts.googleapis.com/css?family=Lato:100,300,400,700);
+
+body {
+  height: 100%;
+  margin: 0;
+  background: #202b33;
+  color: #fff;
+  font-family: 'Lato', sans-serif;
+  text-align: center;
+}
+
+a {
+  color: white;
+}
+
+a:visited {
+  color: white;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 90vw;
+  margin: 0 auto 20vh;
+  max-width: 960px;
+}
+
+.chart-container {
+  width: 100%;
+  flex-flow: column wrap;
+}
+
+.flex-chart{
+  padding-top: 50px;
+  flex-shrink: 0;
+}
