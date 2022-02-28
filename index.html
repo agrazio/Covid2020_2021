@@ -5,7 +5,7 @@
   <meta name="google-site-verification" content="YVJ_2JiDX538dEXxLo6JKn1dFj4TuosIPyqj7HWoaJQ" />
   <meta name="description" content="Confronto COVID 2020 vs 2021" />
   <meta charset="utf-8">
-  <title>Covid ITALIA: 2020 vs 2021</title>
+  <title>Covid ITALIA: 2020 vs 2021 vs 2022</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="author" content="Andrea Grazioli">
   <link rel="stylesheet" href="style.css">
@@ -18,8 +18,9 @@
 
 <body>
   <div class="container">
-    <h1>Covid in ITALIA<br/>2020 vs 2021</h1>
-    <p>I grafici mettono a confronto alcuni valori giornalieri legati alla pandemia di Coronavirus in Italia, paragonando i singoli giorni del 2020 con quelli 2021.
+    <h1>Covid in ITALIA<br/>Confronto annuale<br/>2020 - 2021 - 2022</h1>
+    <p>I grafici mettono a confronto alcuni valori giornalieri legati alla pandemia di Coronavirus in Italia, paragonando i singoli giorni tra i vari anni di pandemia.
+      <br /> Ogni anno pandemico inizia dal 24/2, cioè dal primo giorno del 2020 in cui i dati sono stati resi disponibili.
       <br />Dati ufficiali presi da: <a href="https://github.com/pcm-dpc/COVID-19">GitHub Protezione Civile</a></p>
     <p>&#9888;&#65039; Qualsiasi intepretazione o elaborazione in questa pagina può essere soggetta a errori e non è in alcun modo un canale ufficiale. &#9888;&#65039;</p>
     <div class="chart-container">
@@ -56,25 +57,29 @@
 
       values[0] = covidData["terapie_intensive"][0];
       values[1] = covidData["terapie_intensive"][1];
+      values[2] = covidData["terapie_intensive"][2];
 
-      values[2] = covidData["ricoverati_con_sintomi"][0];
-      values[3] = covidData["ricoverati_con_sintomi"][1];
+      values[3] = covidData["ricoverati_con_sintomi"][0];
+      values[4] = covidData["ricoverati_con_sintomi"][1];
+      values[5] = covidData["ricoverati_con_sintomi"][2];
 
-      values[4] = covidData["totale_positivi"][0];
-      values[5] = covidData["totale_positivi"][1];
+      values[6] = covidData["totale_positivi"][0];
+      values[7] = covidData["totale_positivi"][1];
+      values[8] = covidData["totale_positivi"][2];
 
-      values[6] = covidData["nuovi_positivi"][0];
-      values[7] = covidData["nuovi_positivi"][1];
+      values[9] = covidData["nuovi_positivi"][0];
+      values[10] = covidData["nuovi_positivi"][1];
+      values[11] = covidData["nuovi_positivi"][2];
     }
   });
 
-  drawCharts(date, values[0], values[1], "terapieChart", "TERAPIE INTENSIVE");
-  drawCharts(date, values[2], values[3], "ricoveratiChart", "RICOVERATI");
-  drawCharts(date, values[4], values[5], "totalePositivi", "ATTUALMENTE POSITIVI");
-  drawCharts(date, values[6], values[7], "nuoviPositivi", "NUOVI POSITIVI");
+  drawCharts(date, values[0], values[1], values[2], "terapieChart", "TERAPIE INTENSIVE");
+  drawCharts(date, values[3], values[4], values[5], "ricoveratiChart", "RICOVERATI");
+  drawCharts(date, values[6], values[7], values[8], "totalePositivi", "ATTUALMENTE POSITIVI");
+  drawCharts(date, values[9], values[10], values[11], "nuoviPositivi", "NUOVI POSITIVI");
 
 
-  function drawCharts(labels, line1, line2, chart) {
+  function drawCharts(labels, line1, line2, line3, chart) {
     const data = {
       labels: labels,
       datasets: [{
@@ -88,6 +93,12 @@
         backgroundColor: '#F9F871',
         borderColor: '#F9F871',
         data: line2,
+        borderWidth: 2
+      }, {
+        label: '2022',
+        backgroundColor: '#E0AFA0',
+        borderColor: '#E0AFA0',
+        data: line3,
         borderWidth: 2
       }]
     };

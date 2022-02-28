@@ -13,16 +13,21 @@ def handler(request):
      response = urlopen(url)
      data_json = json.loads(response.read())
 
-     ricoverati_con_sintomi = [[], []]
-     terapie_intensive = [[], []]
-     totale_positivi = [[], []]
-     nuovi_positivi = [[], []]
-     date = [[], []]
+     ricoverati_con_sintomi = [[], [], []]
+     terapie_intensive = [[], [], []]
+     totale_positivi = [[], [], []]
+     nuovi_positivi = [[], [], []]
+     date = [[], [], []]
 
      for value in data_json:
           data = datetime.fromisoformat(value["data"]).date()
 
-          index = 0 if data < datetime(2021, 2, 24).date() else 1
+          if data < datetime(2021, 2, 24).date():
+              index = 0
+          elif data >= datetime(2021, 2, 24).date() and data < datetime(2022, 2, 24).date():
+              index = 1
+          else:
+              index = 2
 
         # modo poco elegante per superare l'anno bisestile
           if data != datetime(2020, 2, 29).date():
