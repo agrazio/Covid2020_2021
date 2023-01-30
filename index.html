@@ -12,7 +12,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.2.0/chart.min.js" integrity="sha512-VMsZqo0ar06BMtg0tPsdgRADvl0kDHpTbugCBBrL55KmucH6hP9zWdLIWY//OTfMnzz6xWQRxQqsUFefwHuHyg==" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.min.js" integrity="sha512-oh5t+CdSBsaVVAvxcZKy3XJdP7ZbYUBSRCXDTVn0ODewMDDNnELsrG9eDm8rVZAQg7RsDD/8K3MjPAFB13o6eA==" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.1/chartjs-adapter-moment.min.js" integrity="sha512-hVy4KxCKgnXi2ok7rlnlPma4JHXI1VPQeempoaclV1GwRHrDeaiuS1pI6DVldaj5oh6Opy2XJ2CTljQLPkaMrQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/it.min.js" integrity="sha512-abyAPza1Q/3PRl2L54rOvygrx/XIkupvWrs7sNm+jD6gfNf3+MEvPJzdSG4LyYWSTA8NY7AnTCnRz5NNyvsg0w==" crossorigin="anonymous"></script>
 </head>
 
@@ -21,16 +21,17 @@
     <h1>Covid in ITALIA<br/>Confronto annuale<br/>2020 - 2021 - 2022</h1>
     <p>I grafici mettono a confronto alcuni valori giornalieri legati alla pandemia di Coronavirus in Italia, paragonando i singoli giorni tra i vari anni di pandemia.
       <br /> Ogni anno pandemico inizia dal 24/2, cioè dal primo giorno del 2020 in cui i dati sono stati resi disponibili.
+      <br />I dati sono raccolti giornalmente ma aggiornati settimanalmente dal 04/11/2022, in seguito alla decisione del Governo di pubblicare i bollettini solo ogni venerdì.
       <br />Dati ufficiali presi da: <a href="https://github.com/pcm-dpc/COVID-19">GitHub Protezione Civile</a></p>
     <p>&#9888;&#65039; Qualsiasi intepretazione o elaborazione in questa pagina può essere soggetta a errori e non è in alcun modo un canale ufficiale. &#9888;&#65039;</p>
     <div class="chart-container">
       <div class="flex-chart">
         <h2>TOTALE POSITIVI</h2>
-        <canvas id="totalePositivi"></canvas>
+        <canvas id="totaleChart"></canvas>
       </div>
       <div class="flex-chart">
         <h2>NUOVI POSITIVI</h2>
-        <canvas id="nuoviPositivi"></canvas>
+        <canvas id="nuoviChart"></canvas>
       </div>
       <div class="flex-chart">
         <h2>TERAPIE INTENSIVE</h2>
@@ -47,39 +48,35 @@
   var covidData;
   var values = [];
 
+  Date.prototype.addDays = function(days) {
+          var date = new Date(this.valueOf());
+          date.setDate(date.getDate() + days);
+          return date;
+        };
+
   $.ajax({
     url: 'output.json',
     dataType: 'json',
-    async: false,
-    data: covidData,
+    async: true,
     success: function(covidData) {
-      date = covidData["date"][0]; //primo anno
+      let dateArray = [];
+      let startDate = new Date("2020-02-24T00:00:00");
+      for (let d = 0; d <= 365; d++) {
+        let newDate = startDate.addDays(d);
+        dateArray.push(newDate);
+      }
+      console.log(dateArray);
 
-      values[0] = covidData["terapie_intensive"][0];
-      values[1] = covidData["terapie_intensive"][1];
-      values[2] = covidData["terapie_intensive"][2];
+      drawCharts(dateArray, covidData["2020"]["ter"], covidData["2021"]["ter"], covidData["2022"]["ter"], covidData["2023"]["ter"], "terapieChart", "TERAPIE INTENSIVE");
+      drawCharts(dateArray, covidData["2020"]["ric"], covidData["2021"]["ric"], covidData["2022"]["ric"], covidData["2023"]["ric"], "ricoveratiChart", "RICOVERATI");
+      drawCharts(dateArray, covidData["2020"]["tot"], covidData["2021"]["tot"], covidData["2022"]["tot"], covidData["2023"]["tot"], "totaleChart", "ATTUALMENTE POSITIVI");
+      drawCharts(dateArray, covidData["2020"]["pos"], covidData["2021"]["pos"], covidData["2022"]["pos"], covidData["2023"]["pos"], "nuoviChart", "NUOVI POSITIVI");
 
-      values[3] = covidData["ricoverati_con_sintomi"][0];
-      values[4] = covidData["ricoverati_con_sintomi"][1];
-      values[5] = covidData["ricoverati_con_sintomi"][2];
-
-      values[6] = covidData["totale_positivi"][0];
-      values[7] = covidData["totale_positivi"][1];
-      values[8] = covidData["totale_positivi"][2];
-
-      values[9] = covidData["nuovi_positivi"][0];
-      values[10] = covidData["nuovi_positivi"][1];
-      values[11] = covidData["nuovi_positivi"][2];
     }
   });
 
-  drawCharts(date, values[0], values[1], values[2], "terapieChart", "TERAPIE INTENSIVE");
-  drawCharts(date, values[3], values[4], values[5], "ricoveratiChart", "RICOVERATI");
-  drawCharts(date, values[6], values[7], values[8], "totalePositivi", "ATTUALMENTE POSITIVI");
-  drawCharts(date, values[9], values[10], values[11], "nuoviPositivi", "NUOVI POSITIVI");
 
-
-  function drawCharts(labels, line1, line2, line3, chart) {
+  function drawCharts(labels, line1, line2, line3, line4, chart, title) {
     const data = {
       labels: labels,
       datasets: [{
@@ -99,6 +96,12 @@
         backgroundColor: '#E0AFA0',
         borderColor: '#E0AFA0',
         data: line3,
+        borderWidth: 2
+      }, {
+        label: '2023',
+        backgroundColor: '#F4F1BB',
+        borderColor: '#F4F1BB',
+        data: line4,
         borderWidth: 2
       }]
     };
